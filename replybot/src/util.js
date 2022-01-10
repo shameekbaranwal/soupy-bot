@@ -30,7 +30,16 @@ const lastMessageSelector =
 
 const sendMessage = async (page, message) => {
 	const inp = await page.$(textEditorSelector);
-	await inp.type(message());
+	let msg = '';
+
+	try {
+		msg = await message();
+	} catch (e) {
+		console.error(e);
+		msg = '*_bot_* : Error.';
+	}
+
+	await inp.type(msg);
 	await page.keyboard.press('Enter');
 };
 

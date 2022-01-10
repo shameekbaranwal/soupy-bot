@@ -1,11 +1,17 @@
 const main = require('./src/main');
 const { getRandomString } = require('./src/util');
+const getInsult = require('./src/api.js');
 
 const config = {
-	contact: 'Vaidehi Baranwal',
+	contact: 'soup | phee',
 	equals: '7',
 	contains: '',
-	message: () => 'botreply ' + getRandomString(5),
+	// message: () =>
+	// 	new Promise(resolve => resolve('*_bot_* : ' + getRandomString(5))),
+	message: async () => {
+		const msg = await getInsult();
+		return msg;
+	},
 };
 
 main(config);

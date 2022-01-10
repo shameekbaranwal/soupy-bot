@@ -34,24 +34,30 @@ async function main({ contact, equals, contains, message }) {
 		let lastMessage = 'random';
 
 		while (true) {
-			const messages = await page.$(messagesSelector);
-			if (messages) {
+			try {
 				const latestMessage = await page.$(lastMessageSelector);
-				const text = await latestMessage.getProperty('textContent');
+				const texty = await latestMessage.getProperty('textContent');
+				let text = texty.toString();
+				text = text.substring(9, text.length);
 
 				if (text === lastMessage) {
 					continue;
 				} else {
 					lastMessage = text;
+					console.log(lastMessage);
 					if (
-						(equals && lastMessage.equals(equals)) ||
+						(equals && lastMessage === equals) ||
 						(contains && lastMessage.includes(contains))
 					)
 						await sendMessage(page, message);
 				}
+			} catch (error) {
+				console.error('Error reading latest message. \n' + error);
+				await delay(1000);
+				continue;
 			}
 
-			await delay(100);
+			await delay(50);
 		}
 	} catch (error) {
 		console.log('====================================');
