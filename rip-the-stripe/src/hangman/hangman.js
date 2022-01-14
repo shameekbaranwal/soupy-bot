@@ -1,48 +1,59 @@
-const fs = require('fs');
+const fs = require('fs').promises;
 
 class Hangman {
 	constructor(turns, trigger) {
-		this.STATE = 0; // 0 = waiting for word, 1 = playing
+		this.STATE = 0; // 0 = waiting for word, 1 = playing, 2 = won, 3 = lost
 		this.turns = turns;
 		this.trigger = trigger;
-		this.word = this.pickWord();
 		this.guessedLetters = [];
-		this.gameOver = false;
+		this.word = '';
 	}
 
-	pickWord() {
-		fs.readFile('./words.txt', 'utf8', (err, data) => {
-			if (err) {
-				console.error("Couldn't pick a word\n", err);
-				return;
-			}
+	async pickWord() {
+		try {
+			const data = await fs.readFile('./words.txt', 'utf8');
 
-			let words = data.split('\n');
+			let words = data.split('\r\n');
 			while (this.word.length < 5 || this.word.length > 6) {
 				this.word = words[Math.floor(Math.random() * words.length)];
 			}
-			this.word = this.word.toLowerCase();
+			this.word = 'hello';
+			this.word = this.word.toUpperCase();
 			// storing word as array for ease
 			this.word = this.word.split('');
 			// make the guessedLetters array full of empty strings
 			this.guessedLetters = new Array(this.word.length).fill('');
+			console.log(this.word.join(''));
 
 			// after word is obtained, start game
-			this.STATE = word.length;
-		});
+			this.STATE = 1;
+		} catch (err) {
+			console.error("Couldn't pick a word\n", err);
+			this.STATE = -1;
+			return;
+		}
 	}
 
 	getResponse() {
-		return `${this.getGuessed()}\n You have ${
-			this.turns
-		} turns left\nReply with "${trigger} <letter>" to make a guess!`;
+		if (this.STATE == 1)
+			return `\t\t${this.getGuessed()}\n\nYou have ${
+				this.turns
+			} turns left\nReply with "${
+				this.trigger
+			} <letter>" to make a guess!`;
+
+		if (this.STATE == 2)
+			return `You won!\nThe word was ${this.word.join('')}`;
+
+		if (this.STATE == 3)
+			return `You lost!\nThe word was ${this.word.join('')}`;
 	}
 
 	getGuessed() {
 		let str = '';
 
 		this.guessedLetters.forEach(letter => {
-			if (!letter) str += letter;
+			if (letter) str += letter;
 			else str += '_';
 		});
 
@@ -50,23 +61,27 @@ class Hangman {
 	}
 
 	guess(letter) {
+		letter = letter.toUpperCase();
+		let decrement = 1;
 		this.word.forEach((ch, index) => {
 			if (ch == letter) {
 				this.guessedLetters[index] = letter;
+				decrement = 0;
 			}
 		});
-		this.checkWin();
+		// if the letter is not in the word, there is a turn cost
+		this.turns -= decrement;
+		this.checkLost();
 	}
 
-	checkWin() {
-		let win = true;
-		this.guessedLetters.forEach(letter => {
-			if (!letter) win = false;
-		});
+	checkLost() {
+		if (this.turns == 0) {
+			let win = true;
+			this.guessedLetters.forEach(letter => {
+				if (!letter) win = false;
+			});
 
-		if (win) {
-			this.gameOver = true;
-			this.STATE = 2;
+			this.STATE = win ? 2 : 3;
 		}
 	}
 }
