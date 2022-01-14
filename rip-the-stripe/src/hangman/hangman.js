@@ -2,11 +2,13 @@ const fs = require('fs').promises;
 
 class Hangman {
 	constructor(turns, trigger) {
-		this.STATE = 0; // 0 = waiting for word, 1 = playing, 2 = won, 3 = lost
+		this.STATE = 0; // 0 = waiting for word, 1 = playing, 2 = won, 3 = lost, 4 = repeated guess
 		this.turns = turns;
 		this.trigger = trigger;
 		this.guessedLetters = [];
 		this.word = '';
+		this.guesses = [];
+		this.repeated = false;
 	}
 
 	async pickWord() {
@@ -35,18 +37,27 @@ class Hangman {
 	}
 
 	getResponse() {
+		let response = '';
+
+		if (this.repeated) {
+			response += `You already guessed the letter: ${this.lastGuess}.\n`;
+			this.repeated = false;
+		}
+
 		if (this.STATE == 1)
-			return `\t\t${this.getGuessed()}\n\nYou have ${
+			response += `\t\t${this.getGuessed()}\n\nYou have ${
 				this.turns
 			} turns left\nReply with "${
 				this.trigger
 			} <letter>" to make a guess!`;
 
 		if (this.STATE == 2)
-			return `You won!\nThe word was ${this.word.join('')}`;
+			response = `You won!\nThe word was ${this.word.join('')}`;
 
 		if (this.STATE == 3)
-			return `You lost!\nThe word was ${this.word.join('')}`;
+			response = `You lost!\nThe word was ${this.word.join('')}`;
+
+		return response;
 	}
 
 	getGuessed() {
@@ -60,8 +71,16 @@ class Hangman {
 		return str;
 	}
 
+	// make the response say what the latest guess was, and if it was correct or not.
 	guess(letter) {
 		letter = letter.toUpperCase();
+
+		if (this.guesses.includes(letter)) {
+			repeated = true;
+			this.guesses.push(letter);
+			return;
+		}
+
 		let decrement = 1;
 		this.word.forEach((ch, index) => {
 			if (ch == letter) {
@@ -70,19 +89,22 @@ class Hangman {
 			}
 		});
 		// if the letter is not in the word, there is a turn cost
+		this.guesses.push(letter);
 		this.turns -= decrement;
 		this.checkLost();
 	}
 
 	checkLost() {
 		if (this.turns == 0) {
-			let win = true;
-			this.guessedLetters.forEach(letter => {
-				if (!letter) win = false;
-			});
-
-			this.STATE = win ? 2 : 3;
+			this.STATE = 3;
 		}
+
+		let win = true;
+		this.guessedLetters.forEach(letter => {
+			if (!letter) win = false;
+		});
+
+		if (win) this.STATE = 2;
 	}
 }
 
