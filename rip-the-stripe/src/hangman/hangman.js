@@ -5,10 +5,10 @@ class Hangman {
 		this.STATE = 0; // 0 = waiting for word, 1 = playing, 2 = won, 3 = lost, 4 = repeated guess
 		this.turns = turns;
 		this.trigger = trigger;
-		this.guessedLetters = [];
+		this.guessedLetters = []; // array of letters of the word guessed correctly
 		this.word = '';
-		this.guesses = [];
-		this.repeated = false;
+		this.guesses = []; // array of all guesses
+		this.repeated = false; // whether the last guess was repeated
 	}
 
 	async pickWord() {
@@ -19,7 +19,9 @@ class Hangman {
 			while (this.word.length < 5 || this.word.length > 6) {
 				this.word = words[Math.floor(Math.random() * words.length)];
 			}
-			this.word = 'hello';
+			// for testing
+			// this.word = 'hello';
+
 			this.word = this.word.toUpperCase();
 			// storing word as array for ease
 			this.word = this.word.split('');
@@ -40,26 +42,31 @@ class Hangman {
 		let response = '';
 
 		if (this.repeated) {
-			response += `You already guessed the letter: ${this.lastGuess}.\n`;
+			response += `\tYou already guessed the letter: ${this.latestGuess()}.\n\n`;
 			this.repeated = false;
+		} else {
+			if (this.guesses.length > 0)
+				response += `\tYou guessed : *${this.latestGuess()}*\n\n`;
 		}
 
 		if (this.STATE == 1)
-			response += `\t\t${this.getGuessed()}\n\nYou have ${
+			response += `\t\t${this.getGuessed()}\n\n\tYou have ${
 				this.turns
 			} turns left\nReply with "${
 				this.trigger
 			} <letter>" to make a guess!`;
 
 		if (this.STATE == 2)
-			response = `You won!\nThe word was ${this.word.join('')}`;
+			response += `You won!\nThe word was ${this.word.join('')}`;
 
 		if (this.STATE == 3)
-			response = `You lost!\nThe word was ${this.word.join('')}`;
+			response += `You lost!\nThe word was ${this.word.join('')}`;
 
+		response += '\n===================';
 		return response;
 	}
 
+	// to get the current guessed word, with underscores in place of missing letters
 	getGuessed() {
 		let str = '';
 
@@ -76,7 +83,7 @@ class Hangman {
 		letter = letter.toUpperCase();
 
 		if (this.guesses.includes(letter)) {
-			repeated = true;
+			this.repeated = true;
 			this.guesses.push(letter);
 			return;
 		}
@@ -91,10 +98,11 @@ class Hangman {
 		// if the letter is not in the word, there is a turn cost
 		this.guesses.push(letter);
 		this.turns -= decrement;
-		this.checkLost();
+		this.updateState();
 	}
 
-	checkLost() {
+	// runs after every guess, to check if the game is over
+	updateState() {
 		if (this.turns == 0) {
 			this.STATE = 3;
 		}
@@ -105,6 +113,10 @@ class Hangman {
 		});
 
 		if (win) this.STATE = 2;
+	}
+
+	latestGuess() {
+		return this.guesses[this.guesses.length - 1];
 	}
 }
 

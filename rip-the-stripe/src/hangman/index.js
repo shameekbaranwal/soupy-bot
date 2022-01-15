@@ -19,7 +19,13 @@ const play = async () => {
 	console.log(obj.getResponse());
 	obj.guess('x');
 	console.log(obj.getResponse());
-	obj.guess('e');
+	obj.guess('x');
+	console.log(obj.getResponse());
+	obj.guess('y');
+	console.log(obj.getResponse());
+	obj.guess('i');
+	console.log(obj.getResponse());
+	obj.guess('z');
 	console.log(obj.getResponse());
 };
 
