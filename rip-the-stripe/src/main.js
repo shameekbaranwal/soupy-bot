@@ -9,12 +9,7 @@ const {
 	lastMessageSelector,
 	sendMessage,
 } = require('./util');
-const {
-	start,
-	guess,
-	turnsLeft,
-	state
-} = require('./hangman')
+const { start, guess, turnsLeft, state } = require('./hangman');
 
 let ACTIVE = false;
 
@@ -49,24 +44,26 @@ async function main({ contact, turns, trigger }) {
 				const texty = await latestMessage.getProperty('textContent');
 				let text = texty.toString();
 				text = text.substring(9, text.length);
-				
+
 				// If the current latest message is same as before, continue
 				if (text === lastMessage) continue;
-				
+
 				// If not, new message received
-				
+
 				// Log it
 				lastMessage = text;
 				console.log(lastMessage);
-				
-				
-				text = text.toUpperCase()
+
+				text = text.toUpperCase();
 				// Check for trigger
 				if (text.startsWith(trigger)) {
-					const token = text.substring(trigger.length + 1, text.length);
+					const token = text.substring(
+						trigger.length + 1,
+						text.length,
+					);
 					if (!ACTIVE) {
-						console.log("Not started yet");
-						console.log("token = " + token);
+						console.log('Not started yet');
+						console.log('token = ' + token);
 						if (token == 'START') {
 							ACTIVE = true;
 							const message = await start(trigger);
@@ -74,15 +71,14 @@ async function main({ contact, turns, trigger }) {
 						}
 						continue;
 					}
-					if (ACTIVE) { 
+					if (ACTIVE) {
 						const letter = token[0];
 						const message = await guess(letter);
-						console.log("Turns Left = " + turnsLeft());
-						console.log("State = " + state());
+						console.log('Turns Left = ' + turnsLeft());
+						console.log('State = ' + state());
 						await sendMessage(page, () => message);
-
 					}
-					if (state() = "WON" || state() == "LOST") {
+					if (state() == 'WON' || state() == 'LOST') {
 						break;
 						// process.exit(0);
 					}
