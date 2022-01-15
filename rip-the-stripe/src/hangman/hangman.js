@@ -13,7 +13,10 @@ class Hangman {
 
 	async pickWord() {
 		try {
-			const data = await fs.readFile('./words.txt', 'utf8');
+			const data = await fs.readFile(
+				'C:\\Users\\shame\\Desktop\\code\\Repositories\\soupy-bot\\rip-the-stripe\\src\\hangman\\words.txt',
+				'utf8',
+			);
 
 			let words = data.split('\r\n');
 			while (this.word.length < 5 || this.word.length > 6) {

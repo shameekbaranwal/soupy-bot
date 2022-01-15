@@ -9,12 +9,19 @@ const {
 	lastMessageSelector,
 	sendMessage,
 } = require('./util');
+const {
+	start,
+	guess,
+	turnsLeft,
+	state
+} = require('./hangman')
 
-let STATE = false;
+let ACTIVE = false;
 
 async function main({ contact, turns, trigger }) {
 	try {
 		// Initialize browser and page
+		trigger = trigger.toUpperCase();
 		const browser = await puppeteer.launch({ headless: false });
 		const page = await browser.newPage();
 		await page.setUserAgent(UserAgent);
@@ -42,29 +49,54 @@ async function main({ contact, turns, trigger }) {
 				const texty = await latestMessage.getProperty('textContent');
 				let text = texty.toString();
 				text = text.substring(9, text.length);
-
+				
 				// If the current latest message is same as before, continue
 				if (text === lastMessage) continue;
-
+				
 				// If not, new message received
-
+				
 				// Log it
 				lastMessage = text;
 				console.log(lastMessage);
-
+				
+				
+				text = text.toUpperCase()
 				// Check for trigger
 				if (text.startsWith(trigger)) {
-					// If ACTIVE == 0, then start the game
+					const token = text.substring(trigger.length + 1, text.length);
+					if (!ACTIVE) {
+						console.log("Not started yet");
+						console.log("token = " + token);
+						if (token == 'START') {
+							ACTIVE = true;
+							const message = await start(trigger);
+							await sendMessage(page, () => message);
+						}
+						continue;
+					}
+					if (ACTIVE) { 
+						const letter = token[0];
+						const message = await guess(letter);
+						console.log("Turns Left = " + turnsLeft());
+						console.log("State = " + state());
+						await sendMessage(page, () => message);
+
+					}
+					if (state() = "WON" || state() == "LOST") {
+						break;
+						// process.exit(0);
+					}
+					// If ACTIVE == false, then start the game
 					// 		Create a new object of the game with turns
 					// Else
 					// 		Pass the value of lastMessage to the game object
 					// 		Grab the response of the game from the object
 					// 		Paste appropriate image with appropriate caption
 					// 		Send the response
-					const message = `
-					__C_
-					You have ${turns} turns left.`;
-					await sendMessage(page, message);
+					// const message = `
+					// __C_
+					// You have ${turns} turns left.`;
+					// await sendMessage(page, message);
 				}
 			} catch (error) {
 				console.error('Error reading latest message. \n' + error);

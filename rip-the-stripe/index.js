@@ -1,10 +1,10 @@
 const main = require('./src/main');
 const { getRandomString } = require('./src/util');
-const getInsult = require('./src/api.js');
+// const getInsult = require('./src/api.js');
 
 const config = {
-	contact: 'soup | phee',
-	trigger: 'rip the stripe',
+	contact: '+91 73793 77666',
+	trigger: 'xdz',
 	turns: 5,
 };
 
