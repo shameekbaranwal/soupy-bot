@@ -53,7 +53,7 @@ class Hangman {
 		}
 
 		if (this.STATE == 1)
-			response += `\t\t${this.getGuessed()}\n\n\tYou have ${
+			response += `\t\t${this.getGuessed()}\n\nYou have ${
 				this.turns
 			} turns left\nReply with "${
 				this.trigger

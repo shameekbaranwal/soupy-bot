@@ -43,6 +43,29 @@ const sendMessage = async (page, message) => {
 	await page.keyboard.press('Enter');
 };
 
+const sendMultiLineMessage = async (page, message) => {
+	const inp = await page.$(textEditorSelector);
+	let msg = '';
+
+	try {
+		msg = await message();
+		const lines = msg.split('\n');
+		for (let i = 0; i < lines.length; i++) {
+			await inp.type(lines[i]);
+			// await page.keyboard.press('Enter');
+			await page.keyboard.down('ShiftLeft');
+			await page.keyboard.press('Enter');
+			await page.keyboard.up('ShiftLeft');
+		}
+	} catch (e) {
+		console.error(e);
+		msg = '*_bot_* : oopsiedoodle';
+		await inp.type(msg);
+	}
+
+	await page.keyboard.press('Enter');
+};
+
 module.exports = {
 	delay,
 	getRandomString,
@@ -53,4 +76,5 @@ module.exports = {
 	messagesSelector,
 	lastMessageSelector,
 	sendMessage,
+	sendMultiLineMessage,
 };

@@ -8,6 +8,7 @@ const {
 	messagesSelector,
 	lastMessageSelector,
 	sendMessage,
+	sendMultiLineMessage,
 } = require('./util');
 const { start, guess, turnsLeft, state } = require('./hangman');
 
@@ -67,7 +68,10 @@ async function main({ contact, turns, trigger }) {
 						if (token == 'START') {
 							ACTIVE = true;
 							const message = await start(trigger);
-							await sendMessage(page, () => message);
+							await sendMultiLineMessage(
+								page,
+								() => message + '\n' + '🐼'.repeat(turnsLeft()),
+							);
 						}
 						continue;
 					}
@@ -76,7 +80,10 @@ async function main({ contact, turns, trigger }) {
 						const message = await guess(letter);
 						console.log('Turns Left = ' + turnsLeft());
 						console.log('State = ' + state());
-						await sendMessage(page, () => message);
+						await sendMultiLineMessage(
+							page,
+							() => message + '\n' + '🐼'.repeat(turnsLeft()),
+						);
 					}
 					if (state() == 'WON' || state() == 'LOST') {
 						break;
