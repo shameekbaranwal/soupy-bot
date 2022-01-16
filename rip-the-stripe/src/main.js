@@ -8,7 +8,7 @@ const {
 	messagesSelector,
 	lastMessageSelector,
 	sendMessage,
-	sendMultiLineMessage,
+	sendVideo,
 } = require('./util');
 const { start, guess, turnsLeft, state } = require('./hangman');
 
@@ -68,9 +68,13 @@ async function main({ contact, turns, trigger }) {
 						if (token == 'START') {
 							ACTIVE = true;
 							const message = await start(trigger);
-							await sendMultiLineMessage(
+							await sendMessage(
 								page,
-								() => message + '\n' + '🐼'.repeat(turnsLeft()),
+								() =>
+									message +
+									'\n' +
+									'🐼'.repeat(turnsLeft()) +
+									'🤡'.repeat(turns - turnsLeft()),
 							);
 						}
 						continue;
@@ -80,9 +84,23 @@ async function main({ contact, turns, trigger }) {
 						const message = await guess(letter);
 						console.log('Turns Left = ' + turnsLeft());
 						console.log('State = ' + state());
-						await sendMultiLineMessage(
+						// await sendVideo(
+						// 	page,
+						// 	'' + turnsLeft(),
+						// 	() =>
+						// 		message +
+						// 		'\n' +
+						// 		'🐼'.repeat(turnsLeft()) +
+						// 		'🤡'.repeat(turns - turnsLeft()),
+						// );
+						await sendMessage(
 							page,
-							() => message + '\n' + '🐼'.repeat(turnsLeft()),
+							// '' + turnsLeft(),
+							() =>
+								message +
+								'\n' +
+								'🐼'.repeat(turnsLeft()) +
+								'🤡'.repeat(turns - turnsLeft()),
 						);
 					}
 					if (state() == 'WON' || state() == 'LOST') {

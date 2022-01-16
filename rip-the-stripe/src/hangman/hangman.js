@@ -1,4 +1,6 @@
 const fs = require('fs').promises;
+const dotenv = require('dotenv');
+dotenv.config();
 
 class Hangman {
 	constructor(turns, trigger) {
@@ -14,7 +16,8 @@ class Hangman {
 	async pickWord() {
 		try {
 			const data = await fs.readFile(
-				'C:\\Users\\shame\\Desktop\\code\\Repositories\\soupy-bot\\rip-the-stripe\\src\\hangman\\words.txt',
+				process.env.REPO_PATH +
+					'soupy-bot\\rip-the-stripe\\src\\hangman\\words.txt',
 				'utf8',
 			);
 
