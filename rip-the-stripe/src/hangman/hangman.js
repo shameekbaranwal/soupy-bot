@@ -65,7 +65,6 @@ class Hangman {
 		if (this.STATE == 3)
 			response += `You lost!\nThe word was ${this.word.join('')}`;
 
-		response += '\n===================';
 		return response;
 	}
 
@@ -74,8 +73,8 @@ class Hangman {
 		let str = '';
 
 		this.guessedLetters.forEach(letter => {
-			if (letter) str += letter;
-			else str += '_';
+			if (letter) str += letter + ' ';
+			else str += '- ';
 		});
 
 		return str;
