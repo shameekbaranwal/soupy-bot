@@ -55,7 +55,7 @@ async function main({ contact, turns, trigger }) {
 				lastMessage = text;
 				console.log(lastMessage);
 
-				text = text.toUpperCase();
+				text = text?.toUpperCase();
 				// Check for trigger
 				if (text.startsWith(trigger)) {
 					const token = text.substring(
@@ -86,20 +86,9 @@ async function main({ contact, turns, trigger }) {
 						);
 					}
 					if (state() == 'WON' || state() == 'LOST') {
-						break;
-						// process.exit(0);
+						ACTIVE = false;
+						console.log('Game over');
 					}
-					// If ACTIVE == false, then start the game
-					// 		Create a new object of the game with turns
-					// Else
-					// 		Pass the value of lastMessage to the game object
-					// 		Grab the response of the game from the object
-					// 		Paste appropriate image with appropriate caption
-					// 		Send the response
-					// const message = `
-					// __C_
-					// You have ${turns} turns left.`;
-					// await sendMessage(page, message);
 				}
 			} catch (error) {
 				console.error('Error reading latest message. \n' + error);
