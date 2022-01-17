@@ -3,9 +3,10 @@ const { getRandomString } = require('./src/util');
 // const getInsult = require('./src/api.js');
 
 const config = {
-	contact: '+91 73793 77666',
+	contact: 'soup',
 	trigger: 'bot',
 	turns: 5,
+	mode: 'TEXT',
 };
 
 main(config);

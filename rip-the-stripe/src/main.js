@@ -8,17 +8,21 @@ const {
 	messagesSelector,
 	lastMessageSelector,
 	sendMessage,
-	sendMultiLineMessage,
+	sendVideo,
 } = require('./util');
 const { start, guess, turnsLeft, state } = require('./hangman');
 
 let ACTIVE = false;
 
-async function main({ contact, turns, trigger }) {
+async function main({ contact, turns, trigger, mode }) {
 	try {
 		// Initialize browser and page
 		trigger = trigger.toUpperCase();
-		const browser = await puppeteer.launch({ headless: false });
+		const browser = await puppeteer.launch({
+			headless: false,
+			executablePath:
+				'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+		});
 		const page = await browser.newPage();
 		await page.setUserAgent(UserAgent);
 		console.log('Initialized browser');
@@ -68,9 +72,13 @@ async function main({ contact, turns, trigger }) {
 						if (token == 'START') {
 							ACTIVE = true;
 							const message = await start(trigger);
-							await sendMultiLineMessage(
+							await sendMessage(
 								page,
-								() => message + '\n' + '🐼'.repeat(turnsLeft()),
+								() =>
+									message +
+									'\n' +
+									'🐼'.repeat(turnsLeft()) +
+									'🤡'.repeat(turns - turnsLeft()),
 							);
 						}
 						continue;
@@ -80,10 +88,31 @@ async function main({ contact, turns, trigger }) {
 						const message = await guess(letter);
 						console.log('Turns Left = ' + turnsLeft());
 						console.log('State = ' + state());
-						await sendMultiLineMessage(
-							page,
-							() => message + '\n' + '🐼'.repeat(turnsLeft()),
-						);
+						switch (MODE) {
+							case 'TEXT': {
+								await sendMessage(
+									page,
+									() =>
+										message +
+										'\n' +
+										'🐼'.repeat(turnsLeft()) +
+										'🤡'.repeat(turns - turnsLeft()),
+								);
+								break;
+							}
+							case 'VIDEO': {
+								await sendVideo(
+									page,
+									'' + turnsLeft(),
+									() =>
+										message +
+										'\n' +
+										'🐼'.repeat(turnsLeft()) +
+										'🤡'.repeat(turns - turnsLeft()),
+								);
+								break;
+							}
+						}
 					}
 					if (state() == 'WON' || state() == 'LOST') {
 						ACTIVE = false;
