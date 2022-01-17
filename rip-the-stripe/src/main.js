@@ -20,8 +20,7 @@ async function main({ contact, turns, trigger, mode }) {
 		trigger = trigger.toUpperCase();
 		const browser = await puppeteer.launch({
 			headless: false,
-			executablePath:
-				'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+			executablePath: process.env.CHROME_PATH,
 		});
 		const page = await browser.newPage();
 		await page.setUserAgent(UserAgent);
