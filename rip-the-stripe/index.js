@@ -6,6 +6,7 @@ const config = {
 	contact: 'soup',
 	trigger: 'bot',
 	turns: 5,
+	mode: 'TEXT',
 };
 
 main(config);

@@ -14,7 +14,7 @@ const { start, guess, turnsLeft, state } = require('./hangman');
 
 let ACTIVE = false;
 
-async function main({ contact, turns, trigger }) {
+async function main({ contact, turns, trigger, mode }) {
 	try {
 		// Initialize browser and page
 		trigger = trigger.toUpperCase();
@@ -88,23 +88,31 @@ async function main({ contact, turns, trigger }) {
 						const message = await guess(letter);
 						console.log('Turns Left = ' + turnsLeft());
 						console.log('State = ' + state());
-						await sendVideo(
-							page,
-							'' + turnsLeft(),
-							() =>
-								message +
-								'\n' +
-								'🐼'.repeat(turnsLeft()) +
-								'🤡'.repeat(turns - turnsLeft()),
-						);
-						// await sendMessage(
-						// 	page,
-						// 	() =>
-						// 		message +
-						// 		'\n' +
-						// 		'🐼'.repeat(turnsLeft()) +
-						// 		'🤡'.repeat(turns - turnsLeft()),
-						// );
+						switch (MODE) {
+							case 'TEXT': {
+								await sendMessage(
+									page,
+									() =>
+										message +
+										'\n' +
+										'🐼'.repeat(turnsLeft()) +
+										'🤡'.repeat(turns - turnsLeft()),
+								);
+								break;
+							}
+							case 'VIDEO': {
+								await sendVideo(
+									page,
+									'' + turnsLeft(),
+									() =>
+										message +
+										'\n' +
+										'🐼'.repeat(turnsLeft()) +
+										'🤡'.repeat(turns - turnsLeft()),
+								);
+								break;
+							}
+						}
 					}
 					if (state() == 'WON' || state() == 'LOST') {
 						ACTIVE = false;
