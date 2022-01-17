@@ -63,14 +63,14 @@ const sendMessage = async (page, message) => {
 };
 
 const sendCaption = async (page, message) => {
-	const inp = await page.$(textEditorSelector);
+	// const inp = await page.$(captionEditorSelector);
 	let msg = '';
 
 	try {
 		msg = await message();
 		const lines = msg.split('\n');
 		for (let i = 0; i < lines.length; i++) {
-			await inp.type(lines[i]);
+			await page.keyboard.type(lines[i]);
 			// await page.keyboard.press('Enter');
 			await page.keyboard.down('ShiftLeft');
 			await page.keyboard.press('Enter');
@@ -95,7 +95,7 @@ const getVideo = turnsLeft => {
 	// return `./assets/${turnsLeft}.mp4`;
 	return (
 		process.env.REPO_PATH +
-		'soupy-bot\\rip-the-stripe\\src\\assets\\' +
+		'soupy-bot\\rip-the-stripe\\src\\assets\\a' +
 		turnsLeft +
 		'.mp4'
 	);
@@ -107,9 +107,13 @@ const sendVideo = async (page, turnsLeft, caption) => {
 	await page.waitForSelector(mediaInput);
 	console.log('Waited for mediainput selector');
 	await uploadFile(page, getVideo(turnsLeft));
-	console.log('Uploaded file');
+
+	// await page.keyboard.down('ControlLeft');
+	// await page.keyboard.press('V');
+	// await page.keyboard.up('ControlLeft');
 	await delay(2000);
-	await page.waitForSelector(captionEditorSelector);
+	console.log('Uploaded file');
+	// await page.waitForSelector(captionEditorSelector);
 	await sendCaption(page, caption);
 	console.log('Wrote caption and sent video');
 };
