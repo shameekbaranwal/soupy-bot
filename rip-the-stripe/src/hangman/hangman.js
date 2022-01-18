@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 class Hangman {
-	constructor(turns, trigger) {
+	constructor(turns, trigger, vowels) {
 		this.STATE = 0; // 0 = waiting for word, 1 = playing, 2 = won, 3 = lost, 4 = repeated guess
 		this.turns = turns;
 		this.trigger = trigger;
@@ -11,6 +11,7 @@ class Hangman {
 		this.word = '';
 		this.guesses = []; // array of all guesses
 		this.repeated = false; // whether the last guess was repeated
+		this.vowels = vowels;
 	}
 
 	async pickWord() {
@@ -22,7 +23,7 @@ class Hangman {
 			);
 
 			let words = data.split('\r\n');
-			while (this.word.length < 5 || this.word.length > 6) {
+			while (this.word.length < 6 || this.word.length > 7) {
 				this.word = words[Math.floor(Math.random() * words.length)];
 			}
 			// for testing
@@ -37,6 +38,15 @@ class Hangman {
 
 			// after word is obtained, start game
 			this.STATE = 1;
+
+			// guess the vowels first
+			if (this.vowels) {
+				this.guess('A', true);
+				this.guess('E', true);
+				this.guess('I', true);
+				this.guess('O', true);
+				this.guess('U', true);
+			}
 		} catch (err) {
 			console.error("Couldn't pick a word\n", err);
 			this.STATE = -1;
@@ -51,22 +61,29 @@ class Hangman {
 			response += `\tYou already guessed the letter: ${this.latestGuess()}.\n\n`;
 			this.repeated = false;
 		} else {
-			if (this.guesses.length > 0)
+			if (this.guesses.length > (this.vowels ? 5 : 1))
+				//5 because the first 5 guesses are vowels
 				response += `\tYou guessed : *${this.latestGuess()}*\n\n`;
 		}
 
-		if (this.STATE == 1)
+		if (this.STATE == 1) {
 			response += `\t\t${this.getGuessed()}\n\nYou have ${
 				this.turns
-			} turns left\nReply with "${
-				this.trigger
-			} <letter>" to make a guess!`;
+			} turns left`;
+			response += `\nYou've already guessed: ${this.guesses.join(
+				', ',
+			)}\n`;
+		}
 
 		if (this.STATE == 2)
-			response += `You won!\nThe word was ${this.word.join('')}`;
+			response += `You won!\nThe word was ${this.word.join('')}\nSend "${
+				this.trigger
+			} start" to restart the game.`;
 
 		if (this.STATE == 3)
-			response += `You lost!\nThe word was ${this.word.join('')}`;
+			response += `You lost!\nThe word was ${this.word.join('')}\nSend "${
+				this.trigger
+			} start" to restart the game.`;
 
 		return response;
 	}
@@ -84,7 +101,7 @@ class Hangman {
 	}
 
 	// make the response say what the latest guess was, and if it was correct or not.
-	guess(letter) {
+	guess(letter, flag) {
 		letter = letter.toUpperCase();
 
 		if (this.guesses.includes(letter)) {
@@ -102,6 +119,7 @@ class Hangman {
 		});
 		// if the letter is not in the word, there is a turn cost
 		this.guesses.push(letter);
+		if (flag) return;
 		this.turns -= decrement;
 		this.updateState();
 	}

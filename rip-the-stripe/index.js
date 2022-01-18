@@ -7,6 +7,7 @@ const config = {
 	trigger: 'bot',
 	turns: 5,
 	mode: 'TEXT',
+	vowels: true,
 };
 
 main(config);

@@ -14,7 +14,7 @@ const { start, guess, turnsLeft, state } = require('./hangman');
 
 let ACTIVE = false;
 
-async function main({ contact, turns, trigger, mode }) {
+async function main({ contact, turns, trigger, mode, vowels }) {
 	try {
 		// Initialize browser and page
 		trigger = trigger.toUpperCase();
@@ -70,7 +70,7 @@ async function main({ contact, turns, trigger, mode }) {
 						console.log('token = ' + token);
 						if (token == 'START') {
 							ACTIVE = true;
-							const message = await start(trigger);
+							const message = await start(trigger, vowels);
 							await sendMessage(
 								page,
 								() =>
@@ -78,6 +78,11 @@ async function main({ contact, turns, trigger, mode }) {
 									'\n' +
 									'🐼'.repeat(turnsLeft()) +
 									'🤡'.repeat(turns - turnsLeft()),
+							);
+							await sendMessage(
+								page,
+								() =>
+									`Reply with "${trigger} <letter>" to make a guess.`,
 							);
 						}
 						continue;
@@ -87,7 +92,7 @@ async function main({ contact, turns, trigger, mode }) {
 						const message = await guess(letter);
 						console.log('Turns Left = ' + turnsLeft());
 						console.log('State = ' + state());
-						switch (MODE) {
+						switch (mode) {
 							case 'TEXT': {
 								await sendMessage(
 									page,
@@ -97,6 +102,12 @@ async function main({ contact, turns, trigger, mode }) {
 										'🐼'.repeat(turnsLeft()) +
 										'🤡'.repeat(turns - turnsLeft()),
 								);
+								if (state() == 'PLAYING')
+									await sendMessage(
+										page,
+										() =>
+											`Reply with "${trigger} <letter>" to make a guess.`,
+									);
 								break;
 							}
 							case 'VIDEO': {
@@ -109,14 +120,20 @@ async function main({ contact, turns, trigger, mode }) {
 										'🐼'.repeat(turnsLeft()) +
 										'🤡'.repeat(turns - turnsLeft()),
 								);
+								if (state() == 'PLAYING')
+									await sendMessage(
+										page,
+										() =>
+											`Reply with "${trigger} <letter>" to make a guess.`,
+									);
 								break;
 							}
 						}
 					}
-					if (state() == 'WON' || state() == 'LOST') {
-						ACTIVE = false;
-						console.log('Game over');
-					}
+				}
+				if (state() == 'WON' || state() == 'LOST') {
+					ACTIVE = false;
+					console.log('Game over');
 				}
 			} catch (error) {
 				console.error('Error reading latest message. \n' + error);
