@@ -19,7 +19,7 @@ class Hangman {
 		try {
 			const data = await fs.readFile(
 				process.env.REPO_PATH +
-					'soupy-bot\\rip-the-stripe\\src\\hangman\\words.txt',
+					'soupy-bot\\hangbot\\src\\hangman\\words.txt',
 				'utf8',
 			);
 

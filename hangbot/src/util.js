@@ -91,11 +91,9 @@ const uploadFile = async (page, file) => {
 };
 
 const getVideo = turnsLeft => {
-	// return 'C:\\Users\\shame\\Desktop\\code\\Repositories\\soupy-bot\\rip-the-stripe\\src\\assets\\4.mp4';
-	// return `./assets/${turnsLeft}.mp4`;
 	return (
 		process.env.REPO_PATH +
-		'soupy-bot\\rip-the-stripe\\src\\assets\\a' +
+		'soupy-bot\\hangbot\\src\\assets\\a' +
 		turnsLeft +
 		'.mp4'
 	);

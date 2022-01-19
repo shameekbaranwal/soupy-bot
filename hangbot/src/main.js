@@ -130,10 +130,10 @@ async function main({ contact, turns, trigger, mode, vowels }) {
 							}
 						}
 					}
-				}
-				if (state() == 'WON' || state() == 'LOST') {
-					ACTIVE = false;
-					console.log('Game over');
+					if (state() == 'WON' || state() == 'LOST') {
+						ACTIVE = false;
+						console.log('Game over');
+					}
 				}
 			} catch (error) {
 				console.error('Error reading latest message. \n' + error);
