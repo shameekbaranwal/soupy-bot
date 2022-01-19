@@ -22,7 +22,7 @@ Open `replybot/index.js` to edit the contact name, and the _equals_ and _contain
 
 ---
 
-## 3. rip-the-stripe
+## 3. hangbot
 
 Steps to run the bot:
 
@@ -52,11 +52,11 @@ Steps to run the bot:
 
 ---
 
-3. Finally, set the appropriate contact name and trigger for the bot in `/rip-the-stripe/index.js`, and run the bot using the following command:
+3. Finally, set the appropriate contact name, trigger, number of turns, and mode for the bot in `/hangbot/index.js`, and run the bot using the following command:
 
 ---
 
-    node rip-the-stripe/
+    node hangbot/
 
 ---
 
