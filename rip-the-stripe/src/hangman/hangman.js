@@ -11,7 +11,8 @@ class Hangman {
 		this.word = '';
 		this.guesses = []; // array of all guesses
 		this.repeated = false; // whether the last guess was repeated
-		this.vowels = vowels;
+		this.vowels = vowels; // whether there are going to be any pre-guessed vowels.
+		this.preGuesses = 2; // number of guesses before the first guess by the player. Essentially, how many hints the player gets.
 	}
 
 	async pickWord() {
@@ -41,11 +42,11 @@ class Hangman {
 
 			// guess the vowels first
 			if (this.vowels) {
-				this.guess('A', true);
-				this.guess('E', true);
-				this.guess('I', true);
-				this.guess('O', true);
-				this.guess('U', true);
+				// guess any two vowels
+				const v = ['A', 'E', 'I', 'O', 'U'];
+				const shuffled = v.sort(() => 0.5 - Math.random());
+				for (let i = 0; i < this.preGuesses; i++)
+					this.guess(shuffled[i], true);
 			}
 		} catch (err) {
 			console.error("Couldn't pick a word\n", err);
@@ -61,7 +62,7 @@ class Hangman {
 			response += `\tYou already guessed the letter: ${this.latestGuess()}.\n\n`;
 			this.repeated = false;
 		} else {
-			if (this.guesses.length > (this.vowels ? 5 : 1))
+			if (this.guesses.length > (this.vowels ? this.preGuesses : 1))
 				//5 because the first 5 guesses are vowels
 				response += `\tYou guessed : *${this.latestGuess()}*\n\n`;
 		}
