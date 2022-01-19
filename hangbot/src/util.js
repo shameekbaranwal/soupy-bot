@@ -93,7 +93,7 @@ const uploadFile = async (page, file) => {
 const getVideo = turnsLeft => {
 	return (
 		process.env.REPO_PATH +
-		'soupy-bot\\hangbot\\src\\assets\\a' +
+		'soupy-bot\\hangbot\\src\\assets\\' +
 		turnsLeft +
 		'.mp4'
 	);
@@ -111,7 +111,6 @@ const sendVideo = async (page, turnsLeft, caption) => {
 	// await page.keyboard.up('ControlLeft');
 	await delay(2000);
 	console.log('Uploaded file');
-	// await page.waitForSelector(captionEditorSelector);
 	await sendCaption(page, caption);
 	console.log('Wrote caption and sent video');
 };
