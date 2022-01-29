@@ -2,9 +2,9 @@ const main = require('./src/main');
 const { getRandomString } = require('./src/util');
 
 const config = {
-	contact: '+91 73793 77666',
-	num: 15,
-	message: () => 'lmao' + getRandomString(15),
+	contact: 'asdfg',
+	num: 50,
+	message: () => 'Your verification code is ' + getRandomString(7) + '.',
 };
 
 main(config);
